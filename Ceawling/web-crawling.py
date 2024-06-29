@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 import time
+import json
  
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -102,12 +103,17 @@ while True :
     
 print("done!")
 
-print("Data collection complete, saving to CSV file.")
-result_df = pd.DataFrame({
-              'RD_WRITE_DT' : write_dt_lst,
-              'RD_ITEM_NM' : item_nm_lst,
-              'RD_CONTENT' : content_lst,
-              'RD_RANK' : ranking_lst
-            })
+print("Data collection complete, saving to JSON file.")
 
-result_df.to_csv('sentiment-service/data/navershopping_review.csv', index = None, encoding = 'utf-8-sig')
+result_data = []
+for write_dt, item_nm, content, ranking in zip(write_dt_lst, item_nm_lst, content_lst, ranking_lst):
+    result_data.append({
+        'RD_WRITE_DT': write_dt,
+        'RD_ITEM_NM': item_nm,
+        'RD_CONTENT': content,
+        'RD_RANK': ranking
+    })
+
+
+with open('sentiment-service/NLP/data/navershopping_review.json', 'w', encoding='utf-8') as f:
+    json.dump(result_data, f, ensure_ascii=False, indent=4)
