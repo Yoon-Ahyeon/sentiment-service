@@ -44,6 +44,7 @@ time.sleep(3)
 write_dt_lst = []
 item_nm_lst = []
 content_lst = []
+ranking_lst = []
 date_cut = (datetime.now() - timedelta(days = 365)).strftime('%Y%m%d')
 
 page_num = 1
@@ -63,23 +64,22 @@ while True :
         write_dt = datetime.strptime(write_dt_raw, '%y.%m.%d.').strftime('%Y%m%d')
         
         item_nm_info_raw = reviews[review].findAll('div', {'class' : '_2FXNMst_ak'})[0].get_text()
-
         item_nm_info_for_del = reviews[review].findAll('div', {'class' : '_2FXNMst_ak'})[0].find('dl', {'class' : 'XbGQRlzveO'}).get_text()
-
         item_nm_info= re.sub(item_nm_info_for_del, '', item_nm_info_raw)
 
         str_start_idx = re.sub(item_nm_info_for_del, '', item_nm_info_raw).find('제품 선택: ')
-
         item_nm = item_nm_info[str_start_idx + 6:].strip()
         
         review_content_raw = reviews[review].findAll('div', {'class' : '_1kMfD5ErZ6'})[0].find('span', {'class' : '_2L3vDiadT9'}).get_text()
         review_content = re.sub(' +', ' ',re.sub('\n',' ',review_content_raw ))
+
+        rank_num = reviews[review].findAll('em' ,{'class' : '_15NU42F3kT'})[0].get_text()
         
         write_dt_lst.append(write_dt)
         item_nm_lst.append(item_nm)
         content_lst.append(review_content)
+        ranking_lst.append(rank_num)
         
-    
     # page 이동
     try:
         next_button = driver.find_element(By.CSS_SELECTOR, 'a.fAUKm1ewwo._2Ar8-aEUTq._nlog_click')
@@ -106,7 +106,8 @@ print("Data collection complete, saving to CSV file.")
 result_df = pd.DataFrame({
               'RD_WRITE_DT' : write_dt_lst,
               'RD_ITEM_NM' : item_nm_lst,
-              'RD_CONTENT' : content_lst
+              'RD_CONTENT' : content_lst,
+              'RD_RANK' : ranking_lst
             })
 
 result_df.to_csv('sentiment-service/data/navershopping_review.csv', index = None, encoding = 'utf-8-sig')
