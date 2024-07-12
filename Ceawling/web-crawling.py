@@ -68,7 +68,7 @@ while True :
         item_nm_info_for_del = reviews[review].findAll('div', {'class' : '_2FXNMst_ak'})[0].find('dl', {'class' : 'XbGQRlzveO'}).get_text()
         item_nm_info= re.sub(item_nm_info_for_del, '', item_nm_info_raw)
 
-        str_start_idx = re.sub(item_nm_info_for_del, '', item_nm_info_raw).find('제품 선택: ')
+        str_start_idx = re.sub(item_nm_info_for_del, '', item_nm_info_raw).find('필수 옵션: ')
         item_nm = item_nm_info[str_start_idx + 6:].strip()
         
         review_content_raw = reviews[review].findAll('div', {'class' : '_1kMfD5ErZ6'})[0].find('span', {'class' : '_2L3vDiadT9'}).get_text()
