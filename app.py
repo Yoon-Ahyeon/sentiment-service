@@ -1,12 +1,50 @@
 # 실행 방법 : flask --app app.py run --debug
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+import requests
+import subprocess
 import json
 import os
 
 app = Flask(__name__)
 CORS(app)
 app.config['DEBUG'] = True
+
+@app.route('/urls', methods=['POST'])
+def urls():
+    data = request.json
+    url = data.get('url', '')
+
+    app.logger.info(f"Received URL: {url}")
+    
+    if not url:
+        app.logger.error("No URL provided")
+        return jsonify({'status': 'error', 'message': 'URL을 제공해 주세요.'}), 400
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        
+        app.logger.info(f"URL fetch successful: {url}")
+    
+    except requests.RequestException as e:
+        app.logger.error(f"Error fetching URL: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+    try: 
+        result = subprocess.run(
+            ['python', 'Ceawling/web-crawling.py', url],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        app.logger.info(f"Script output: {result.stdout}")
+        return jsonify({'status': 'success', 'output': result.stdout})
+    
+    except subprocess.CalledProcessError as e:
+        app.logger.error(f"Error running script: {e.stderr}")
+        return jsonify({'status': 'error', 'output': e.stderr}), 500
+
 
 @app.route('/reviews', methods=['POST'])
 def reviews():
