@@ -9,7 +9,7 @@
 | NLP       | -        |
 | Web       | -        |
 | Docker    | -        |
-| 배포    | -          |
+| 배포      | -        |
 
 1. Crawling 수행 (O)
 2. WordCloud 생성 
