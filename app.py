@@ -1,4 +1,5 @@
 # 실행 방법 : flask --app app.py run --debug
+# flask말고 FastAPI, Django 써보기 !!
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
